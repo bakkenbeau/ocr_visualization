@@ -1,13 +1,4 @@
-import torch
-import os
-import time
-import cv2
-from CRAFT_pytorch.test import test_net
-from CRAFT_pytorch.craft import CRAFT
-from CRAFT_pytorch.test import copyStateDict
-import CRAFT_pytorch.imgproc
-
-import CRAFT_pytorch.craft_functions
+import craft_functions
 
 # def runCRAFTSingleImage(image_path):
 #     net = CRAFT()
@@ -54,4 +45,4 @@ if __name__ == '__main__':
                      "\\Coding\\NJ\\result\\res_ic1.jpg"
     image_option_2 = r'C:\Users\BeauBakken\PycharmProjects\NathanAssignment1\CRAFT_pytorch\test_images\STOP_sign.jpg'
 
-    CRAFT_pytorch.craft_functions.runCRAFTSingleImage(image_option_2)
+    craft_functions.runCRAFTSingleImage(image_option_2)

@@ -15,7 +15,7 @@ https://github.com/JaidedAI/EasyOCR
 
 # custom-made library from downloaded CRAFT repository, functions located in "\CRAFT_pytorch\craft_functions.py"
 # runCRAFTSingleImage is currently the only supported function
-from CRAFT_pytorch.craft_functions import runCRAFTSingleImage
+from craft.craft_functions import runCRAFTSingleImage
 
 from qtpy import QtWidgets, QtGui
 import os
