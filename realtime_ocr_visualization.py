@@ -228,7 +228,7 @@ class OCRSceneContainer:
 
     # select an image from a directory
     @bind(base_image_file_path=dict(type="file", nameFilter="*.jpg"))
-    def select_img(self, base_image_file_path=image_option_4):
+    def select_img(self, base_image_file_path=""):
         # delete any old images if a new base image has been selected
         viewer.clearOverlays()
 
