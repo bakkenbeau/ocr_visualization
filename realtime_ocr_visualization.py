@@ -13,7 +13,7 @@ https://github.com/clovaai/CRAFT-pytorch
 https://github.com/JaidedAI/EasyOCR
 """
 
-# custom-made library from downloaded CRAFT repository, functions located in "\CRAFT_pytorch\craft_functions.py"
+# custom-made library from downloaded CRAFT repository, functions located in "craft\craft_functions.py"
 # runCRAFTSingleImage is currently the only supported function
 from craft.craft_functions import runCRAFTSingleImage
 
@@ -27,10 +27,10 @@ import easyocr
 from qtextras import bindInteractorOptions as bind, MaskCompositor
 
 
-image_option_1 = r'C:\Users\BeauBakken\PycharmProjects\NathanAssignment1\test_images\res_ic4.jpg'
-image_option_2 = r'C:\Users\BeauBakken\PycharmProjects\NathanAssignment1\test_images\STOP2_sign.jpg'
-image_option_3 = r'C:\Users\BeauBakken\PycharmProjects\NathanAssignment1\test_images\STOP3_sign.jpg'
-image_option_4 = r'C:\Users\BeauBakken\PycharmProjects\NathanAssignment1\test_images\ic_test_12_resize.jpg'
+# image_option_1 = r'C:\Users\BeauBakken\PycharmProjects\NathanAssignment1\test_images\res_ic4.jpg'
+# image_option_2 = r'C:\Users\BeauBakken\PycharmProjects\NathanAssignment1\test_images\STOP2_sign.jpg'
+# image_option_3 = r'C:\Users\BeauBakken\PycharmProjects\NathanAssignment1\test_images\STOP3_sign.jpg'
+# image_option_4 = r'C:\Users\BeauBakken\PycharmProjects\NathanAssignment1\test_images\ic_test_12_resize.jpg'
 
 pg.setConfigOption("imageAxisOrder", "row-major")
 
@@ -326,9 +326,7 @@ if __name__ == '__main__':
 
     # function to load a base image
     viewer.toolsEditor.registerFunction(
-        ocr_scene_container.select_img, name="Select Image", runOptions=[RunOptions.ON_CHANGED,
-                                                     RunOptions.ON_CHANGING,
-                                                     RunOptions.ON_ACTION]
+        ocr_scene_container.select_img, name="Select Image", runOptions=[RunOptions.ON_CHANGED, RunOptions.ON_CHANGING]
     )
 
     # function to run text detection on base image
