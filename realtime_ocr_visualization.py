@@ -1,16 +1,19 @@
 """
 Author: Beau Bakken
-Date: 1/16/23
-Description: Application to display text detection and text recognition results for an uploaded image
+Date: 1//23
+Description: Application to display text detection and text recognition results for an uploaded image,
              with features to filter results and in-paint bounding boxes to remove text from image.
              Also was an exercise to explore PyQT, pyqtgraph, and qtextras libraries.
              Currently uses CRAFT and EasyOCR.
-             Will save detected text regions to result directory specified in variable 'ocr_result_dir' located in 'main'.
+             Application will save detected text regions to result directory specified in variable
+             'ocr_result_dir' located in 'main'.
 Resources:
 https://pyqtgraph.readthedocs.io/en/latest/
 https://pypi.org/project/qtextras/
 https://github.com/clovaai/CRAFT-pytorch
 https://github.com/JaidedAI/EasyOCR
+https://stackoverflow.com/questions/69043530/attributeerror-module-numpy-core-has-no-attribute-numerictypes
+     (fixed debugger issues)
 """
 
 # custom-made library from downloaded CRAFT repository, functions located in "craft\craft_functions.py"
@@ -24,15 +27,24 @@ from pyqtgraph.parametertree import RunOptions
 import numpy as np
 from PIL import Image
 import easyocr
-from qtextras import bindInteractorOptions as bind, MaskCompositor
+from qtextras import MaskCompositor, bindInteractorOptions as bind
+# To stay updated on this custom library:
+# https://stackoverflow.com/questions/19943022/import-a-python-library-from-github
+# pip install git+https://gitlab.com/s3a/qtextras.git
 
-
-# image_option_1 = r'C:\Users\BeauBakken\PycharmProjects\NathanAssignment1\test_images\res_ic4.jpg'
-# image_option_2 = r'C:\Users\BeauBakken\PycharmProjects\NathanAssignment1\test_images\STOP2_sign.jpg'
-# image_option_3 = r'C:\Users\BeauBakken\PycharmProjects\NathanAssignment1\test_images\STOP3_sign.jpg'
-# image_option_4 = r'C:\Users\BeauBakken\PycharmProjects\NathanAssignment1\test_images\ic_test_12_resize.jpg'
+image_option_1 = r'C:\Users\BeauBakken\PycharmProjects\ocr_visualization\test_images\STOP3_sign.jpg'
 
 pg.setConfigOption("imageAxisOrder", "row-major")
+
+
+class TextDisplayBox(QtWidgets.QGraphicsTextItem):
+    def paint(self, painter, option, widget):
+        # good common practice to save and revert paint state when modifying
+        painter.save()
+        painter.setBrush(pg.mkBrush("#ffffff88"))
+        painter.drawRect(self.boundingRect())
+        painter.restore()
+        super().paint(painter, option, widget)
 
 
 class TextRecItem(QtWidgets.QGraphicsRectItem):
@@ -43,18 +55,29 @@ class TextRecItem(QtWidgets.QGraphicsRectItem):
     """
     def __init__(self, text: str, confidence: float, *args, **kwargs):
         QtWidgets.QGraphicsRectItem.__init__(self, *args, **kwargs)
+        self.setAcceptHoverEvents(True)
         self.text = text
         self.confidence = confidence
-        self.display_text = QtWidgets.QGraphicsTextItem()
-        self.display_text.setPlainText("Prediction: " + text + '\n' + "Confidence: " + str(confidence))
+
+        self.display_text = TextDisplayBox(text)
         self.display_text.setParentItem(self)
         self.display_text.hide()
-        self.setAcceptHoverEvents(True)
+        self.display_text.setPos(self.rect().topLeft())
+
+        # self.display_text = QtWidgets.QGraphicsTextItem()
+        # self.display_text.setPlainText("Prediction: " + text + '\n' + "Confidence: " + str(confidence))
+        # self.display_text.setParentItem(self)
+        # self.display_text.hide()
+
+        #self.display_text.setPos(self.rect().topLeft())
+        viewer.addItem(self.display_text)
 
     def hoverEnterEvent(self, event):
+        print("hovered enter")
         self.display_text.show()
 
     def hoverLeaveEvent(self, event):
+        print("hovered exit")
         self.display_text.hide()
 
 
@@ -228,7 +251,7 @@ class OCRSceneContainer:
 
     # select an image from a directory
     @bind(base_image_file_path=dict(type="file", nameFilter="*.jpg"))
-    def select_img(self, base_image_file_path=""):
+    def select_img(self, base_image_file_path=image_option_1):
         # delete any old images if a new base image has been selected
         viewer.clearOverlays()
 
@@ -326,7 +349,8 @@ if __name__ == '__main__':
 
     # function to load a base image
     viewer.toolsEditor.registerFunction(
-        ocr_scene_container.select_img, name="Select Image", runOptions=[RunOptions.ON_CHANGED, RunOptions.ON_CHANGING]
+        ocr_scene_container.select_img, name="Select Image", runOptions=[RunOptions.ON_CHANGED, RunOptions.ON_ACTION,
+                                                                         RunOptions.ON_CHANGING]
     )
 
     # function to run text detection on base image
