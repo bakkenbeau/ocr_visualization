@@ -60,17 +60,11 @@ class TextRecItem(QtWidgets.QGraphicsRectItem):
         self.text = text
         self.confidence = confidence
 
-        self.display_text = TextDisplayBox(text)
+        self.display_text = TextDisplayBox("Prediction: " + text + '\n' + "Confidence: " + str(confidence))
         self.display_text.setParentItem(self)
         self.display_text.hide()
         self.display_text.setPos(self.rect().topLeft())
 
-        # self.display_text = QtWidgets.QGraphicsTextItem()
-        # self.display_text.setPlainText("Prediction: " + text + '\n' + "Confidence: " + str(confidence))
-        # self.display_text.setParentItem(self)
-        # self.display_text.hide()
-
-        #self.display_text.setPos(self.rect().topLeft())
         viewer.addItem(self.display_text)
 
     def hoverEnterEvent(self, event):
@@ -249,8 +243,8 @@ class OCRSceneContainer:
         viewer.addItem(self.roi)
 
     # select an image from a directory
-    @bind(base_image_file_path=dict(type="file", nameFilter="*.jpg"))
-    def select_img(self, base_image_file_path=image_option_1):
+    @bind(base_image_file_path=dict(type="file", value=""))
+    def select_img(self, base_image_file_path):
         # delete any old images if a new base image has been selected
         viewer.clearOverlays()
 
@@ -332,109 +326,9 @@ class OCRSceneContainer:
             viewer.addItem(item)
 
 
-# class RectManager(QtWidgets.QGraphicsItemGroup):
-#     def __init__(self, view=None):
-#         super().__init__()
-#         self.view = view
-#         #self.setHandlesChildEvents(False)
-#
-#     def set_rects(self, bboxes, texts, confidences):
-#         pass
-#
-#
-# class OCRResultSceneViewer(ImageViewer):
-#     def __init__(self, *args, **kwargs):
-#         super().__init__(*args, **kwargs)
-#         self.rect_manager = RectManager(self.getViewBox())
-#         self.addItem(self.rect_manager)
-#
-#         self.toolsEditor.registerFunction(
-#             self.select_image, runOptions=RunOptions.ON_CHANGED
-#         )
-#
-#     # select an image from a directory
-#     @bind(image_file_path=dict(type="file", value=""))
-#     def select_image(self, image_file_path: str | Path):
-#         image = Image.open(image_file_path)
-#         image_np = np.array(image)[..., :3]
-#         self.setImage(image_np)
-#
-#         # automatically run text detection
-#         # returns bounding boxes with [(x1, y1), (x2, y2), (x3, y3), (x4, y4)]
-#         ocr_result_dir = './result/'
-#         bboxes = self.detect_text(image_file_path, ocr_result_dir)
-#
-#         # automatically run text recognition
-#         texts, confidences = self.predict_text(bboxes)
-#
-#         self.rect_manager.set_rects(bboxes, texts, confidences)
-#
-#     def detect_text(self, image_file_path, res_dir):
-#         # CRAFT produces an image with red bounding box, a heatmap image, and text file of coordinates
-#         # of resulting mask in the provided directory. The number of lines in the mask text folder correspond
-#         # to the number of detected words (empty line between bounding box coordinates)
-#         # TODO Optimize to run concurrently to not stall the application and error checking
-#         error = runCRAFTSingleImage(image_file_path, res_dir)
-#
-#         # file path to mask text file
-#         res_mask_txt_path = self.get_res_mask_txt_file_path(image_file_path)
-#
-#         # open mask text file and read each line
-#         with open(res_mask_txt_path) as f:
-#             raw_mask_txt_lines = f.readlines()
-#
-#         # strip the newline characters
-#         count = 0
-#         mask_txt_lines = []
-#         for line in raw_mask_txt_lines:
-#             if line == '\n':
-#                 continue
-#             count += 1
-#             mask_txt_lines.append(line.strip('\n'))
-#
-#         # create TextDetectItems for each detected word
-#         items = []
-#         for line in mask_txt_lines:
-#             x1 = line.split(',')[0]
-#             y1 = line.split(',')[1]
-#             x2 = line.split(',')[2]
-#             y2 = line.split(',')[3]
-#             x3 = line.split(',')[4]
-#             y3 = line.split(',')[5]
-#             x4 = line.split(',')[6]
-#             y4 = line.split(',')[7]
-#
-#             #rect = TextDetectItem([[int(x1), int(y1)], [int(x2), int(y2)], [int(x3), int(y3)], [int(x4), int(y4)]])
-#             #rect.setPen(QtGui.QPen(QtGui.QColor("red"), 2.0))
-#             rect = [[int(x1), int(y1)], [int(x2), int(y2)], [int(x3), int(y3)], [int(x4), int(y4)]]
-#             items.append(rect)
-#             #viewer.addItem(rect)
-#
-#         #self.detect_items = items
-#         return items
-#
-#     def predict_text(self, bboxes):
-#
-#
-#     @staticmethod
-#     def get_res_mask_txt_file_path(img_file_path):
-#         base_img_file_path_words = img_file_path.split('\\')
-#         base_img_name_w_ext = base_img_file_path_words[-1]
-#         base_img_name_wo_ext = base_img_name_w_ext.split('.')[0]
-#         res_mask_txt_path = os.getcwd() + r'\result\res_' + base_img_name_wo_ext + '.txt'
-#         return res_mask_txt_path
-
-
 if __name__ == '__main__':
 
     pg.mkQApp()
-
-    # viewer = OCRResultSceneViewer()
-    # container = viewer.widgetContainer()
-    #
-    # viewer.select_image(image_file_path=image_option_1)
-    #
-    # container.show()
 
     # MaskCompositor is a subclass of an ImageViewer and allows you to easily overlay images from
     # Nathan Jessurun's custom PyQt library: https://pypi.org/project/qtextras/
