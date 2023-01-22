@@ -342,7 +342,7 @@ if __name__ == '__main__':
 
     # function to load a base image
     viewer.toolsEditor.registerFunction(
-        ocr_scene_container.select_img, name="Select Image", runOptions=[RunOptions.ON_CHANGED, RunOptions.ON_ACTION,
+        ocr_scene_container.select_img, name="Select Image", runOptions=[RunOptions.ON_CHANGED,
                                                                          RunOptions.ON_CHANGING]
     )
 
